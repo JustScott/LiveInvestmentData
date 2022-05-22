@@ -28,7 +28,7 @@
 <h4>News</h4>
 
 ```python
->>> from liveinvestment data import marketwatch_news, stock_news, coinmarketcap_news
+>>> from liveinvestmentdata import marketwatch_news, stock_news, coinmarketcap_news
 >>>
 >>> marketwatch_news('aapl')
 {'apple looks closer at india and vietnam to boost production: report': 'https://www.marketwatch.com/articles/apple-china-production-iphone-india-vietnam-51653152645?mod=mw_quote_news', 'apple tells suppliers it wants more production in india and southeast asia, outside of china': 'https://www.marketwatch.com/story/apple-tells-suppliers-it-wants-more-production-in-india-and-southeast-asia-outside-of-china-11653148553?mod=mw_quote_news',..}
