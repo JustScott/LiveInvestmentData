@@ -12,33 +12,40 @@
 
 ```python
 
->>> from liveinvestmentdata import stock_price, multi_stock_price, crypto_price, multi_crypto_price
+>>> from liveinvestmentdata import stock_price, multiple_stock_price,
+                                   crypto_price, multiple_crypto_price
+                                   commodity_price, multiple_commodity_price
 >>> 
 >>> stock_price('aapl')
 137.6
->>> multi_stock_price(['aapl','tsla','amzn'])
+>>> multiple_stock_prices(['aapl','tsla','amzn'])
 {'tsla': 665.4, 'aapl': 137.6, 'amzn': 2159.37}
 >>> 
 >>> crypto_price('ethereum')
 2035.99
->>> multi_crypto_price(['ethereum','bitcoin','dogecoin'])
+>>> multiple_crypto_prices(['ethereum','bitcoin','dogecoin'])
 {'dogecoin': 0.08623, 'bitcoin': 30355.87, 'ethereum': 2038.41}
+>>>
+>>> commodity_price('gold')
+1853.87
+>>>
+>>> multiple_commodity_prices(['gold','silver','platinum','corn','wheat','soybeans'])
+{'platinum': 949.0, 'wheat': 404.75, 'gold': 1853.87, 'soybeans': 16.8, 'corn': 7.71, 'silver': 22.0}
 >>>
 ```
 <h4>News</h4>
 
 ```python
->>> from liveinvestmentdata import marketwatch_news, stock_news, coinmarketcap_news
->>>
->>> marketwatch_news('aapl')
-{'apple looks closer at india and vietnam to boost production: report': 'https://www.marketwatch.com/articles/apple-china-production-iphone-india-vietnam-51653152645?mod=mw_quote_news', 'apple tells suppliers it wants more production in india and southeast asia, outside of china': 'https://www.marketwatch.com/story/apple-tells-suppliers-it-wants-more-production-in-india-and-southeast-asia-outside-of-china-11653148553?mod=mw_quote_news',..}
+>>> from liveinvestmentdata import stock_news, crypto_news, commodity_news
 >>>
 >>> stock_news('aapl') #Will provide more news sources than 'marketwatch' in the future
 {'marketwatch': {'apple looks closer at india and vietnam to boost production: report': 'https://www.marketwatch.com/articles/apple-china-production-iphone-india-vietnam-51653152645?mod=mw_quote_news', 'apple tells suppliers it wants more production in india and southeast asia, outside of china': 'https://www.marketwatch.com/story/apple-tells-suppliers-it-wants-more-production-in-india-and-southeast-asia-outside-of-china-11653148553?mod=mw_quote_news',...}
 >>>
->>> coinmarketcap_news('ethereum')
-{'Ethereum Ropsten Testnet to Merge in June': 'https://coinmarketcap.com/alexandria/article/ethereum-ropsten-testnet-to-merge-in-june', 'Cloudflare to Support Ethereum by Launching Validator Nodes': 'https://coinmarketcap.com/alexandria/article/cloudflare-to-support-ethereum-by-launching-validator-nodes',...}
+>>> crypto_news('bitcoin') #Will provide more news sources than 'coinmarketcap' in the future
+{'coinmarketcap': {'Podcast: Anger as Terra Revived, Bored Ape in TV Show Stolen, Crypto Exec Vows to Stop Trump': 'https://coinmarketcap.com/alexandria/article/podcast-anger-as-terra-revived-bored-ape-in-tv-show-stolen-crypto-exec-vows-to-stop-trump', 'Ukraine Releases Rap Video as It Asks for More Crypto Donations': 'https://coinmarketcap.com/alexandria/article/ukraine-releases-rap-video-as-it-asks-for-more-crypto-donations',...
 >>>
+>>> commodity_news('corn') #Will provide more news sources than 'businessinsider' in the future
+{'businessinsider': {'From burgers to breakfast cereal, some key ingredients are being hit by food export bans - industry experts tell us what might be next': '/news/commodities/food-export-bans-inflation-wheat-oil-palm-beef-2022-5', "Russia's invasion of major wheat exporter Ukraine threatens to push global food prices higher": '/news/stocks/what-russias-invasion-ukraine-means-global-food-supplies-2022-3',...
 ```
 
 <h4>Financials</h4>
@@ -79,8 +86,9 @@
 ```python
 '''
 
-Simple to use stock market and crypto webscraper, utilizing the beautiful soup and requests libraries.
-Easily pull live market prices, news, financial information, and more with simple to use functions.
+Simple to use stock, commodity, forex, and cryptocurrency market webscraper, 
+utilizing the beautiful soup and requests libraries. Easily pull live market prices,
+news, financial information, and more with simple to use functions. 
 
 Functions:
     download_url(url: str) -> object
@@ -90,15 +98,26 @@ Functions:
     #### Prices ####
 
     crypto_price(name: str) -> float
-        Pulls the price of the provided crypto name from coinmarketcap.com,
+        Pulls the price of the provided cryptocurrency name from coinmarketcap.com,
         the cryptocurrencies full name must be provided in most cases.
-    multi_crypto_price(symbol_list: list) -> dict
-        Aquires multiple crypto prices from the 'crypto_price' function, utlizing threads
+    
+    multiple_crypto_prices(symbol_list: list) -> dict
+        Aquires multiple cryptocurrency prices from the 'crypto_price' function, utlizing threads
         for optimal speed and efficiency
+    
     stock_price(ticker: str) -> float
         Pulls the price of the provided stock ticker from marketwatch.com
-    multi_crypto_price(symbol_list: list) -> dict
-        Aquires multiple stock prices from the 'stock_price' function, utlizing threads                                                                         for optimal speed and efficiency
+    
+    multiple_stock_prices(ticker_list: list) -> dict
+        Aquires multiple stock prices from the 'stock_price' function,
+        utlizing threads for optimal speed and efficiency
+
+    commodity_price(name: str) -> float
+        Pulls the price of the provided commodity from markets.businessinsider.com
+
+    multiple_commodity_prices(commodities_list: list) -> dict
+        Aquires multiple commodity prices from the 'commodity_price' function,
+        utlizing threads for optimal speed and efficiency
 
     ##############
 
@@ -106,10 +125,21 @@ Functions:
 
     coinmarketcap_news(name: str) -> dict
         Pulls news from coinmarketcap.com for the provided cryptocurrency name
+    
     marketwatch_news(ticker: str) -> dict
         Pulls news from marketwatch.com for the provided stock ticker
+    
+    businessinsider_news(commodity: str) -> dict
+        Pulls news from markets.businessinsider.com for the provided commodity name        
+
     stock_news(ticker: str) -> dict
         Pulls news for a stock from multiple sources, and filters out repeats
+
+    crypto_news(name: str) -> dict
+        Pulls news for a cryptocurrency from multiple sources, and filters out repeats
+
+    commodity_news(name: str) -> dict
+        Pulls news for a commodity from multiple sources, and filters out repeats
 
     ####################
 
@@ -117,10 +147,13 @@ Functions:
     
     marketwatch_income_statement(ticker: str, key_data_only=False, time_period='quarter') -> dict
         Pulls the income statement table from marketwatch.com for a stock
+    
     marketwatch_balance_sheet(ticker: str, key_data_only=False, time_period='quarter') -> dict
         Pulls the balance sheet table from marketwatch.com for a stock
+    
     marketwatch_cash_flow(ticker: str, key_data_only=False, time_period='quarter') -> dict
         Pulls the cash flow table from marketwatch.com for a stock
+    
     stock_financial_data(ticker: str, key_data_only=False, time_period='quarter') -> dict
         Pulls the Income Statement, Balance Sheet, and Cash Flow tables from marketwatch.com for a stock
     
