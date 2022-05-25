@@ -7,19 +7,29 @@ Functions:
     download_url(url: str) -> object
         Downloads the page source of the provided URL
     
-
-    #### Prices ####
+#### Prices ####
 
     crypto_price(name: str) -> float
-        Pulls the price of the provided crypto name from coinmarketcap.com,
+        Pulls the price of the provided cryptocurrency name from coinmarketcap.com,
         the cryptocurrencies full name must be provided in most cases.
-    multi_crypto_price(symbol_list: list) -> dict
-        Aquires multiple crypto prices from the 'crypto_price' function, utlizing threads
+    
+    multiple_crypto_prices(symbol_list: list) -> dict
+        Aquires multiple cryptocurrency prices from the 'crypto_price' function, utlizing threads
         for optimal speed and efficiency
+    
     stock_price(ticker: str) -> float
         Pulls the price of the provided stock ticker from marketwatch.com
-    multi_crypto_price(symbol_list: list) -> dict
-        Aquires multiple stock prices from the 'stock_price' function, utlizing threads                                                                         for optimal speed and efficiency
+    
+    multiple_stock_prices(ticker_list: list) -> dict
+        Aquires multiple stock prices from the 'stock_price' function,
+        utlizing threads for optimal speed and efficiency
+
+    commodity_price(name: str) -> float
+        Pulls the price of the provided commodity from markets.businessinsider.com
+
+    multiple_commodity_prices(commodities_list: list) -> dict
+        Aquires multiple commodity prices from the 'commodity_price' function,
+        utlizing threads for optimal speed and efficiency
 
     ##############
 
@@ -27,10 +37,22 @@ Functions:
 
     coinmarketcap_news(name: str) -> dict
         Pulls news from coinmarketcap.com for the provided cryptocurrency name
+    
     marketwatch_news(ticker: str) -> dict
         Pulls news from marketwatch.com for the provided stock ticker
+    
+    businessinsider_news(commodity: str) -> dict
+        Pulls news from markets.businessinsider.com for the provided commodity name        
+
     stock_news(ticker: str) -> dict
         Pulls news for a stock from multiple sources, and filters out repeats
+
+    crypto_news(name: str) -> dict
+        Pulls news for a cryptocurrency from multiple sources, and filters out repeats
+
+    commodity_news(name: str) -> dict
+        Pulls news for a commodity from multiple sources, and filters out repeats
+
 
     ####################
 
@@ -67,7 +89,8 @@ def download_url(url: str) -> object:
             The url of the page you want downloaded
 
     Returns:
-        object: A class object containing the page source code, with methods for filtering the data
+        object: 
+            A class object containing the page source code, with methods for filtering the data
     '''
     page = requests.get(url)
 
@@ -78,7 +101,7 @@ def download_url(url: str) -> object:
 
 def crypto_price(name: str) -> float:
     '''
-    Pulls the price of the provided crypto name from coinmarketcap.com,
+    Pulls the price of the provided cryptocurrency name from coinmarketcap.com,
     the cryptocurrencies full name must be provided in most cases.
 
     :function:: crypto_price(name: str) -> float
@@ -88,7 +111,8 @@ def crypto_price(name: str) -> float:
             The full name of the cryptocurrency your searching for
 
     Returns:
-        float: The floating-point integer of the price, as provided by coinmarketcap.com
+        float:
+            The floating-point integer of the price, as provided by coinmarketcap.com
 
     '''
     page = download_url(f"https://coinmarketcap.com/currencies/{name}")
@@ -116,20 +140,21 @@ def crypto_price(name: str) -> float:
         return stripped_price
 
 
-def multi_crypto_price(name_list: list) -> dict:
+def multiple_crypto_prices(name_list: list) -> dict:
     '''
-    Aquires multiple crypto prices from the 'crypto_price' function, utlizing threads
+    Aquires multiple cryptocurrency prices from the 'crypto_price' function, utlizing threads
     for optimal speed and efficiency
 
-    :function:: multi_crypto_price(symbol_list: list) -> dict
+    :function:: multiple_crypto_prices(symbol_list: list) -> dict
 
     Args:
         name_list (list):
-            A list in which each item is a crypto you want the price of
+            A list in which each item is a cryptocurrency you want the price of
 
     Returns:
-        dict: A dicitonary in which the key is the cryptocurrency name,
-        and the value is the price
+        dict:
+            A dicitonary in which the key is the cryptocurrency name,
+            and the value is the price
 
     '''
     #Utilizing a global variable for shared memory amongst threads
@@ -188,20 +213,20 @@ def stock_price(ticker: str) -> float:
         return price
 
 
-def multi_stock_price(ticker_list: list):
+def multiple_stock_prices(ticker_list: list):
     '''
-    Aquires multiple stock prices from the 'stock_price' function, utlizing threads                                                                   
-    for optimal speed and efficiency                                                                                             
+    Aquires multiple stock prices from the 'stock_price' function,
+    utlizing threads for optimal speed and efficiency                                                                                             
 
-    :function:: multi_crypto_price(symbol_list: list) -> dict                                                                                           
+    :function:: multiple_stock_prices(ticker_list: list) -> dict 
 
     Args:
-        name_list (list):
-            A list in which each item is a crypto you want the price of                                                                                 
+        ticker_list (list):
+            A list in which each item is a stock you want the price of                                                                                 
 
     Returns:
-        dict: A dicitonary in which the key is the cryptocurrency name,                                                                                 
-        and the value is the price    
+        dict: 
+            A dicitonary in which the key is the stock name, and the value is the price    
     '''
     #Utilizing a global variable for shared memory amongst threads
     global shared_stock_dict
@@ -222,6 +247,70 @@ def multi_stock_price(ticker_list: list):
         time.sleep(.01)
 
     return shared_stock_dict
+
+
+
+def commodity_price(name: str) -> float:
+    '''
+    Pulls the price of the provided commodity from markets.businessinsider.com
+    
+    :function:: commodity_price(name: str) -> float
+
+    Args:
+        name (str):
+            The commodity you want the price of
+
+    Returns:
+        float: The floating-point integer of the price, provided by markets.businessinsider.com
+
+    '''
+    url = f'https://markets.businessinsider.com/commodities/{name}-price'
+    page = download_url(url)
+
+    #Scrapes the page source for the price, and removes unecessary characters
+    s = page.find('div', class_='price-section__values')
+    price = float(s.find('span').text.strip())
+
+    try:
+        shared_commodity_dict[name] = price
+    except NameError:
+        return price
+
+
+
+def multiple_commodity_prices(commodities_list: list) -> dict:
+    '''
+    Aquires multiple commodity prices from the 'commodity_price' function,
+    utlizing threads for optimal speed and efficiency                                                                                             
+
+    :function:: multiple_commodity_prices(commodities_list: list) -> dict                                                                                           
+    Args:
+        commodities_list (list):
+            A list in which each item is a commodity you want the price of                                                                                 
+    Returns:
+        dict: 
+            A dicitonary in which the key is the commodity name,                                                                                 
+            and the value is the price    
+    '''
+    global shared_commodity_dict
+
+    shared_commodity_dict = {}
+    still_alive = []
+
+    #Starts a new thread for each item in the list
+    for commodity in commodities_list:
+        t = Thread(target=commodity_price, args=(commodity,))
+        t.start()
+        still_alive.append(t)
+
+    #Waits for all of the threads to finish before returning
+    while still_alive:
+        removal = [item for item in still_alive if not item.is_alive()]
+        [still_alive.remove(item) for item in removal]
+        time.sleep(.01)
+
+    return shared_commodity_dict
+
 
 
 #############################################################
@@ -292,6 +381,35 @@ def marketwatch_news(ticker: str) -> dict:
     return stock_news
 
 
+def businessinsider_news(commodity: str) -> dict:
+    '''
+    Pulls news from markets.businessinsider.com for the provided commodity name
+
+    :function:: businessinsider_news(commodity: str) -> dict
+
+    Args:
+        name (str):
+            The name of the commodity you want news for
+
+    Returns:
+        dict: The key is the news headline and the value is the link
+
+    '''
+
+    url = f"https://markets.businessinsider.com/commodities/{commodity}-price"
+    page = download_url(url)
+
+    news_stories = {}
+
+    s = page.find('section', class_="instrument-stories")
+    for news in s.find_all('h3'):
+        headline = news.find('a').text.strip()
+        link = news.find('a').get('href')
+        news_stories[headline] = link
+
+    return news_stories
+
+
 
 def stock_news(ticker: str) -> dict:
     '''
@@ -313,6 +431,52 @@ def stock_news(ticker: str) -> dict:
 
 
     return stock_news_dict
+
+
+def crypto_news(name: str) -> dict:
+    '''
+    Pulls news for a cryptocurrency from multiple sources, and filters out repeats
+    
+    :function:: crypto_news(name: str) -> dict
+
+    Args:
+        name (str):
+            The name of the cryptocurrency you want news for
+
+    Returns:
+        dict: The key is the news headline and the value is the link
+
+    '''
+    crypto_news_dict = {}
+
+    crypto_news_dict['coinmarketcap'] = coinmarketcap_news(name)
+
+    return crypto_news_dict
+
+
+def commodity_news(name: str) -> dict:
+    '''
+    Pulls news for a commodity from multiple sources, and filters out repeats
+    
+    :function:: commodity_news(name: str) -> dict
+
+    Args:
+        name (str):
+            The name of the commodity you want news for
+
+    Returns:
+        dict: The key is the news headline and the value is the link
+
+    '''
+    commodity_news_dict = {}
+
+    commodity_news_dict['businessinsider'] = businessinsider_news(name)
+
+    return commodity_news_dict
+
+
+
+
 
 ##############################################################
 
