@@ -1,5 +1,5 @@
 # <p align='center'>LiveInvestmentData</p>
-<h3 align='center'> Simple to use stock, commodity, forex, and cryptocurrency market webscraper, utilizing the beautiful soup and requests libraries. Easily pull live market prices, news, financial information, and more with simple to use functions. </h3>
+<h3 align='center'> Simple to use stock, commodity, and cryptocurrency market webscraper, utilizing the beautiful soup and requests libraries. Easily pull live market prices, news, financial information, and more with simple to use functions. </h3>
 
 <br>
 <h4>*Disclaimer*</h4
@@ -86,7 +86,7 @@
 ```python
 '''
 
-Simple to use stock, commodity, forex, and cryptocurrency market webscraper, 
+Simple to use stock, commodity, and cryptocurrency market webscraper, 
 utilizing the beautiful soup and requests libraries. Easily pull live market prices,
 news, financial information, and more with simple to use functions. 
 
